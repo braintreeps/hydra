@@ -16,6 +16,7 @@ module Hydra #:nodoc:
       # Log the end time of a file and compute the file's testing
       # duration
       def file_end(file, output)
+        super
         @report[file]['end'] = Time.now.to_f
         @report[file]['duration'] = @report[file]['end'] - @report[file]['start']
       end

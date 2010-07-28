@@ -17,6 +17,7 @@ module Hydra #:nodoc:
       # For each file, just output a . for a successful file, or the
       # Failure/Error output from the tests
       def file_end(file, output)
+        super
         @output.write output
       end
     end

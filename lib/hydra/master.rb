@@ -73,17 +73,21 @@ module Hydra #:nodoc:
       end
 
       # default is one worker that is configured to use a pipe with one runner
-      worker_cfg = opts.fetch('workers') { [ { 'type' => 'local', 'runners' => 1} ] }
+      @worker_cfg = opts.fetch('workers') { [ { 'type' => 'local', 'runners' => 1} ] }
 
       trace "Initialized"
       trace "  Files:   (#{@files.inspect})"
-      trace "  Workers: (#{worker_cfg.inspect})"
+      trace "  Workers: (#{@worker_cfg.inspect})"
       trace "  Verbose: (#{@verbose.inspect})"
+    end
 
+    # Run the tests. Returns true if all tests pass, false otherwise.
+    def run
       @event_listeners.each{|l| l.testing_begin(@files) }
 
-      boot_workers worker_cfg
+      boot_workers @worker_cfg
       process_messages
+      @event_listeners.all? { |l| !l.errors? }
     end
 
     # Message handling

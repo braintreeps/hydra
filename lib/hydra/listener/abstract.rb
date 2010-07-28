@@ -11,6 +11,11 @@ module Hydra #:nodoc:
         @output = output
       end
 
+      # True if there were any test errors
+      def errors?
+        @errors
+      end
+
       # Fired when testing has started
       def testing_begin(files)
       end
@@ -33,6 +38,9 @@ module Hydra #:nodoc:
 
       # Fired when a file is finished
       def file_end(file, output)
+        unless output == '.'
+          @errors = true
+        end
       end
     end
   end

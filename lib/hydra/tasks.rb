@@ -109,7 +109,7 @@ module Hydra #:nodoc:
           $stderr.puts %{WARNING: RAILS_ENV is "development". Make sure to set it properly (ex: "RAILS_ENV=test rake hydra")}
         end
 
-        Hydra::Master.new(@opts)
+        fail unless Hydra::Master.new(@opts).run
       end
     end
   end

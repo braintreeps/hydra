@@ -23,8 +23,16 @@ class Test::Unit::TestCase
     File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', 'write_file.rb'))
   end
 
+  def failing_test_file
+    File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', 'failing_test.rb'))
+  end
+
   def rspec_file
     File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', 'write_file_spec.rb'))
+  end
+
+  def failing_rspec_file
+    File.expand_path(File.join(File.dirname(__FILE__), 'fixtures', 'failing_spec.rb'))
   end
 
   def alternate_rspec_file

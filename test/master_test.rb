@@ -15,9 +15,23 @@ class MasterTest < Test::Unit::TestCase
     should "run a test" do
       Hydra::Master.new(
         :files => [test_file]
-      )
+      ).run
       assert File.exists?(target_file)
       assert_equal "HYDRA", File.read(target_file)
+    end
+
+    should "return true if tests pass" do
+      result = Hydra::Master.new(
+        :files => [test_file]
+      ).run
+      assert_equal true, result
+    end
+
+    should "return false if tests fail" do
+      result = Hydra::Master.new(
+        :files => [failing_test_file]
+      ).run
+      assert_equal false, result
     end
 
     should "run a spec with pending examples" do
@@ -25,14 +39,28 @@ class MasterTest < Test::Unit::TestCase
       Hydra::Master.new(
         :files => [rspec_file_with_pending],
         :listeners => [progress_bar]
-      )
+      ).run
       assert File.exists?(target_file)
       assert_equal "HYDRA", File.read(target_file)
       assert_equal false, progress_bar.instance_variable_get('@errors')
     end
 
+    should "return true if specs pass" do
+      result = Hydra::Master.new(
+        :files => [rspec_file_with_pending]
+      ).run
+      assert_equal true, result
+    end
+
+    should "return false if specs fail" do
+      result = Hydra::Master.new(
+        :files => [failing_rspec_file]
+      ).run
+      assert_equal false, result
+    end
+
     should "generate a report" do
-      Hydra::Master.new(:files => [test_file])
+      Hydra::Master.new(:files => [test_file]).run
       assert File.exists?(target_file)
       assert_equal "HYDRA", File.read(target_file)
       report_file = File.join(Dir.tmpdir, 'hydra_heuristics.yml')
@@ -45,7 +73,7 @@ class MasterTest < Test::Unit::TestCase
       Hydra::Master.new(
         :files => [test_file]*6,
         :workers => [ { :type => :local, :runners => 2 } ]
-      )
+      ).run
       assert File.exists?(target_file)
       assert_equal "HYDRA"*6, File.read(target_file)
     end
@@ -62,7 +90,7 @@ class MasterTest < Test::Unit::TestCase
         :workers => [
           { :type => :local, :runners => 10 }
         ]
-      )
+      ).run
       finish = Time.now
       assert (finish-start) < 30, "took #{finish-start} seconds"
     end
@@ -75,7 +103,7 @@ class MasterTest < Test::Unit::TestCase
           { :type => :local, :runners => 5 },
           { :type => :local, :runners => 5 }
         ]
-      )
+      ).run
       finish = Time.now
       assert (finish-start) < 15, "took #{finish-start} seconds"
     end
@@ -89,7 +117,7 @@ class MasterTest < Test::Unit::TestCase
           :directory => File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib')),
           :runners => 1 
         }]
-      )
+      ).run
       assert File.exists?(target_file)
       assert_equal "HYDRA", File.read(target_file)
     end
@@ -98,7 +126,7 @@ class MasterTest < Test::Unit::TestCase
       Hydra::Master.new(
         :files => [test_file],
         :config => File.join(File.dirname(__FILE__), 'fixtures', 'config.yml')
-      )
+      ).run
       assert File.exists?(target_file)
       assert_equal "HYDRA", File.read(target_file)
     end
@@ -140,7 +168,7 @@ class MasterTest < Test::Unit::TestCase
           :directory => local,
           :exclude => ['test_c.rb']
         }
-      )
+      ).run
       # ensure a is copied
       assert File.exists?(File.join(remote, 'test_a.rb')), "A was not copied"
       # ensure c is not copied
